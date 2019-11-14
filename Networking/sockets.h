@@ -95,7 +95,7 @@ template<>
 inline void receive(int socket,octet *msg,size_t len)
 {
   size_t i=0;
-  int fail = 0;
+  // int fail = 0;
   while (len-i>0)
     { int j=recv(socket,msg+i,len-i,0);
       // success first
@@ -103,15 +103,18 @@ inline void receive(int socket,octet *msg,size_t len)
         i = i + j;
       else if (j < 0)
         {
-          if (errno == EAGAIN or errno == EINTR)
-            {
-              if (++fail > 10000)
-                error("Unavailable too many times");
-              else
-                {
-                  usleep(1000);
-                }
-            }
+          if (errno == EAGAIN || errno == EINTR) {
+            throw socket_timeout();
+          }
+          // else if (errno == EINTR)
+          //   {
+          //     if (++fail > 10000)
+          //       error("Unavailable too many times");
+          //     else
+          //       {
+          //         usleep(1000);
+          //       }
+          //   }
           else
             { error("Receiving error - 1"); }
         }

@@ -90,6 +90,10 @@ void ServerSocket::accept_clients()
       int socksize = sizeof(dest);
       int consocket = accept(main_socket, (struct sockaddr *)&dest, (socklen_t*) &socksize);
       if (consocket<0) { error("set_up_socket:accept"); }
+      struct timeval tv;
+      tv.tv_sec = 2;
+      tv.tv_usec = 0;
+      setsockopt(consocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
 
       int client_id;
       try
@@ -103,6 +107,12 @@ void ServerSocket::accept_clients()
           cerr << "client on " << inet_ntoa(conn.sin_addr) << ":"
                   << ntohs(conn.sin_port) << " left without identification"
                   << endl;
+#endif
+      } catch (socket_timeout&)
+      {
+ #ifdef DEBUG_NETWORKING
+          cerr << "socket timeout happened"
+          << endl;
 #endif
       }
 

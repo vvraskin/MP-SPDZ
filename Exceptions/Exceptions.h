@@ -212,4 +212,12 @@ class closed_connection
     }
 };
 
+class socket_timeout
+{
+    const char* what() const
+    {
+        return "socket read timeout";
+    }
+};
+
 #endif
